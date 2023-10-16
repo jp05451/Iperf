@@ -103,15 +103,16 @@ int client(int argc, char *argv[])
     while (true)
     {
         auto currentTime = std::chrono::high_resolution_clock::now();
-        auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime).count();
-        if (elapsedSeconds >= duration)
+        auto elapsedSeconds = std::chrono::duration_cast<std::chrono::microseconds>(currentTime - startTime).count();
+        // cout << elapsedSeconds<<"micro second" << endl;
+        if (elapsedSeconds >= duration * 1000000)
         {
             break;
         }
         send(clientSocket, data, sizeof(data), 0);
         time++;
     }
-    cout << "sent = " << time << " KB, Rate = " << time / duration / 1000 * 8 << " Mbps" << endl;
+    cout << "sent = " << time << " KB, Rate = " << (double)time / duration / 1000 * 8 << " Mbps" << endl;
 
     close(clientSocket);
 }
@@ -183,15 +184,23 @@ int server(int argc, char *argv[])
     long long totalBytesReceived = 0;
     ssize_t bytesRead;
 
+    auto startTime = std::chrono::high_resolution_clock::now();
     while ((bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0)
     {
         totalBytesReceived += bytesRead;
     }
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(currentTime - startTime).count();
+    // cout << duration << endl;
 
     close(clientSocket);
     close(serverSocket);
 
-    std::cout << "Received " << totalBytesReceived << " bytes." << std::endl;
+    totalBytesReceived /= 1000;
+    // turn to KB
+    std::cout << "Received " << totalBytesReceived << " KB." << std::endl;
+    // cout << duration / 1000000 << endl;
+    std::cout << "Rate " << (double)totalBytesReceived / (duration / 1000000) / 1000 * 8 << "Mbps" << endl;
 
     return 0;
 }
