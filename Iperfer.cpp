@@ -25,6 +25,18 @@ int main(int argc, char *argv[])
             cout << "server mode" << endl;
             server(argc, argv);
         }
+        if (strcmp(argv[i], "--help") == 0)
+        {
+            cout << "Usage: " << argv[0] << " [options]" << endl;
+            cout << "Options:" << endl;
+            cout << "  -c              Run in client mode" << endl;
+            cout << "  -s              Run in server mode" << endl;
+            cout << "  -h <hostname>   Specify server hostname (client mode only)" << endl;
+            cout << "  -p <port>       Specify port number (1024-65535)" << endl;
+            cout << "  -t <time>       Specify duration in seconds (client mode only)" << endl;
+            cout << "  --help          Display this help message" << endl;
+            return 0;
+        }
     }
 
     return 0;
@@ -122,6 +134,7 @@ int server(int argc, char *argv[])
     if (argc != 4)
     {
         cout << "Error: missing or additional arguments" << endl;
+        return -1;
     }
 
     int port;
